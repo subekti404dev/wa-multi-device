@@ -19,7 +19,7 @@ export const URL_REGEX = /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a
 
 const BASE_CONNECTION_CONFIG: CommonSocketConfig<any> = {
 	version: [2, 2204, 13],
-	browser: Browsers.baileys('Chrome'),
+	browser: Browsers.surip('Chrome'),
 
 	waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat',
 	connectTimeoutMs: 20_000,
