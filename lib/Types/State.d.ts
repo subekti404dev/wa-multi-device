@@ -1,3 +1,4 @@
+import { Contact } from './Contact';
 export declare type WAConnectionState = 'open' | 'connecting' | 'close';
 export declare type ConnectionState = {
     /** connection is now open, connecting or closed */
@@ -13,4 +14,9 @@ export declare type ConnectionState = {
     qr?: string;
     /** has the device received all pending notifications while it was offline */
     receivedPendingNotifications?: boolean;
+    /** legacy connection options */
+    legacy?: {
+        phoneConnected: boolean;
+        user?: Contact;
+    };
 };

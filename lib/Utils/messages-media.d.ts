@@ -1,9 +1,9 @@
 /// <reference types="node" />
+import { AxiosRequestConfig } from 'axios';
 import type { Logger } from 'pino';
 import { Readable, Transform } from 'stream';
 import { URL } from 'url';
-import { Options } from 'got';
-import { WAMessageContent, WAMediaUpload, MediaType } from '../Types';
+import { CommonSocketConfig, DownloadableMessage, MediaConnInfo, MediaType, WAMediaUpload, WAMediaUploadFunction, WAMessageContent } from '../Types';
 export declare const hkdfInfoKey: (type: MediaType) => string;
 /** generates all the keys required to encrypt/decrypt & sign a media message */
 export declare function getMediaKeys(buffer: any, mediaType: MediaType): {
@@ -11,13 +11,13 @@ export declare function getMediaKeys(buffer: any, mediaType: MediaType): {
     cipherKey: Buffer;
     macKey: Buffer;
 };
-export declare const compressImage: (bufferOrFilePath: Readable | Buffer | string) => Promise<Buffer>;
+export declare const extractImageThumb: (bufferOrFilePath: Readable | Buffer | string) => Promise<Buffer>;
 export declare const generateProfilePicture: (mediaUpload: WAMediaUpload) => Promise<{
     img: Buffer;
 }>;
 /** gets the SHA256 of the given media message */
 export declare const mediaMessageSHA256B64: (message: WAMessageContent) => string;
-export declare function getAudioDuration(buffer: Buffer | string): Promise<number>;
+export declare function getAudioDuration(buffer: Buffer | string | Readable): Promise<number>;
 export declare const toReadable: (buffer: Buffer) => Readable;
 export declare const toBuffer: (stream: Readable) => Promise<Buffer>;
 export declare const getStream: (item: WAMediaUpload) => Promise<{
@@ -28,12 +28,12 @@ export declare const getStream: (item: WAMediaUpload) => Promise<{
 export declare function generateThumbnail(file: string, mediaType: 'video' | 'image', options: {
     logger?: Logger;
 }): Promise<string>;
-export declare const getGotStream: (url: string | URL, options?: Options & {
+export declare const getHttpStream: (url: string | URL, options?: AxiosRequestConfig & {
     isStream?: true;
-}) => Promise<import("got/dist/source/core").default>;
-export declare const encryptedStream: (media: WAMediaUpload, mediaType: MediaType, saveOriginalFileIfRequired?: boolean) => Promise<{
+}) => Promise<Readable>;
+export declare const encryptedStream: (media: WAMediaUpload, mediaType: MediaType, saveOriginalFileIfRequired?: boolean, logger?: Logger) => Promise<{
     mediaKey: Buffer;
-    encBodyPath: string;
+    encWriteStream: Readable;
     bodyPath: string;
     mac: Buffer;
     fileEncSha256: Buffer;
@@ -41,14 +41,16 @@ export declare const encryptedStream: (media: WAMediaUpload, mediaType: MediaTyp
     fileLength: number;
     didSaveToTmpPath: boolean;
 }>;
-export declare const downloadContentFromMessage: ({ mediaKey, directPath, url }: {
-    mediaKey?: Uint8Array;
-    directPath?: string;
-    url?: string;
-}, type: MediaType) => Promise<Transform>;
+declare type MediaDownloadOptions = {
+    startByte?: number;
+    endByte?: number;
+};
+export declare const downloadContentFromMessage: ({ mediaKey, directPath, url }: DownloadableMessage, type: MediaType, { startByte, endByte }?: MediaDownloadOptions) => Promise<Transform>;
 /**
  * Decode a media message (video, image, document, audio) & return decrypted buffer
  * @param message the media message you want to decode
  */
 export declare function decryptMediaMessageBuffer(message: WAMessageContent): Promise<Readable>;
 export declare function extensionForMediaMessage(message: WAMessageContent): string;
+export declare const getWAUploadToServer: ({ customUploadHosts, fetchAgent, logger }: CommonSocketConfig<any>, refreshMediaConn: (force: boolean) => Promise<MediaConnInfo>) => WAMediaUploadFunction;
+export {};

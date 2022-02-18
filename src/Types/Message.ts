@@ -1,10 +1,9 @@
-import type { ReadStream } from "fs"
-import type { Logger } from "pino"
-import type { URL } from "url"
-import type NodeCache from "node-cache"
-import type { GroupMetadata } from "./GroupMetadata"
-import type { Readable } from "stream"
+import type NodeCache from 'node-cache'
+import type { Logger } from 'pino'
+import type { Readable } from 'stream'
+import type { URL } from 'url'
 import { proto } from '../../WAProto'
+import type { GroupMetadata } from './GroupMetadata'
 
 // export the WAMessage Prototypes
 export { proto as WAProto }
@@ -23,10 +22,12 @@ export type WAMediaUpload = Buffer | { url: URL | string } | { stream: Readable 
 /** Set of message types that are supported by the library */
 export type MessageType = keyof proto.Message
 
+export type DownloadableMessage = { mediaKey?: Uint8Array, directPath?: string, url?: string }
+
 export type MediaConnInfo = {
     auth: string 
     ttl: number
-    hosts: { hostname: string }[]
+    hosts: { hostname: string, maxContentLengthBytes: number }[]
     fetchDate: Date
 }
 
@@ -56,6 +57,16 @@ type Templatable = {
 
     footer?: string
 }
+type Listable = {
+    /** Sections of the List */
+    sections?: proto.ISection[]
+
+    /** Title of a List Message only */
+    title?: string
+
+    /** Text of the bnutton on the list (required) */
+    buttonText?: string
+}
 type WithDimensions = {
     width?: number
     height?: number
@@ -75,7 +86,7 @@ export type AnyMediaMessageContent = (
     } & Mentionable & Buttonable & Templatable & WithDimensions) | {
         audio: WAMediaUpload
         /** if set to true, will send as a `voice note` */
-        pttAudio?: boolean
+        ptt?: boolean
         /** optionally tell the duration of the audio */
         seconds?: number
     } | ({
@@ -91,7 +102,7 @@ export type AnyRegularMessageContent = (
     ({
 	    text: string
     } 
-    & Mentionable & Buttonable & Templatable) | 
+    & Mentionable & Buttonable & Templatable & Listable) | 
     AnyMediaMessageContent | 
     {
         contacts: {
@@ -115,6 +126,8 @@ export type AnyMessageContent = AnyRegularMessageContent | {
 
 export type MessageRelayOptions = {
     messageId?: string
+    /** only send to a specific participant */
+    participant?: string
     additionalAttributes?: { [_: string]: string }
     cachedGroupMetadata?: (jid: string) => Promise<GroupMetadata | undefined>
     //cachedDevices?: (jid: string) => Promise<string[] | undefined>
@@ -136,7 +149,7 @@ export type MessageGenerationOptionsFromContent = MiscMessageGenerationOptions &
 	userJid: string
 }
 
-export type WAMediaUploadFunction = (readStream: ReadStream, opts: { fileEncSha256B64: string, mediaType: MediaType, timeoutMs?: number }) => Promise<{ mediaUrl: string }>
+export type WAMediaUploadFunction = (readStream: Readable, opts: { fileEncSha256B64: string, mediaType: MediaType, timeoutMs?: number }) => Promise<{ mediaUrl: string, directPath: string }>
 
 export type MediaGenerationOptions = {
 	logger?: Logger
@@ -151,16 +164,12 @@ export type MessageContentGenerationOptions = MediaGenerationOptions & {
 }
 export type MessageGenerationOptions = MessageContentGenerationOptions & MessageGenerationOptionsFromContent
 
-export type MessageUpdateType = 'append' | 'notify' | 'prepend'
+export type MessageUpdateType = 'append' | 'notify' | 'replace'
 
-export type MessageInfoEventMap = { [jid: string]: Date }
-export interface MessageInfo {
-    reads: MessageInfoEventMap
-    deliveries: MessageInfoEventMap
-}
+export type MessageUserReceipt = proto.IUserReceipt
 
 export type WAMessageUpdate = { update: Partial<WAMessage>, key: proto.IMessageKey }
 
 export type WAMessageCursor = { before: WAMessageKey | undefined } | { after: WAMessageKey | undefined }
 
-export type MessageInfoUpdate = { key: proto.IMessageKey, update: Partial<MessageInfo> }
+export type MessageUserReceiptUpdate = { key: proto.IMessageKey, receipt: MessageUserReceipt }

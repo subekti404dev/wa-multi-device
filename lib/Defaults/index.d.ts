@@ -1,4 +1,4 @@
-import type { MediaType, SocketConfig } from "../Types";
+import type { LegacySocketConfig, MediaType, SocketConfig } from '../Types';
 export declare const UNAUTHORIZED_CODES: number[];
 export declare const DEFAULT_ORIGIN = "https://web.whatsapp.com";
 export declare const DEF_CALLBACK_PREFIX = "CB:";
@@ -10,6 +10,7 @@ export declare const NOISE_WA_HEADER: Uint8Array;
 /** from: https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url */
 export declare const URL_REGEX: RegExp;
 export declare const DEFAULT_CONNECTION_CONFIG: SocketConfig;
+export declare const DEFAULT_LEGACY_CONNECTION_CONFIG: LegacySocketConfig;
 export declare const MEDIA_PATH_MAP: {
     [T in MediaType]: string;
 };

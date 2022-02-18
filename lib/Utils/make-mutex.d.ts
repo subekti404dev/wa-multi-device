@@ -1,4 +1,7 @@
-declare const _default: () => {
-    mutex<T>(code: () => Promise<T>): Promise<T>;
+export declare const makeMutex: () => {
+    mutex<T>(code: () => T | Promise<T>): Promise<T>;
 };
-export default _default;
+export declare type Mutex = ReturnType<typeof makeMutex>;
+export declare const makeKeyedMutex: () => {
+    mutex<T>(key: string, task: () => T | Promise<T>): Promise<T>;
+};

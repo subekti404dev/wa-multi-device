@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { KeyPair } from "../Types";
-import { BinaryNode } from "../WABinary";
 import { proto } from '../../WAProto';
+import { KeyPair } from '../Types';
+import { BinaryNode } from '../WABinary';
 export declare const makeNoiseHandler: ({ public: publicKey, private: privateKey }: KeyPair) => {
     encrypt: (plaintext: Uint8Array) => Buffer;
     decrypt: (ciphertext: Uint8Array) => Buffer;

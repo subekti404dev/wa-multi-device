@@ -1,11 +1,10 @@
 /// <reference types="node" />
-import type { ReadStream } from "fs";
-import type { Logger } from "pino";
-import type { URL } from "url";
-import type NodeCache from "node-cache";
-import type { GroupMetadata } from "./GroupMetadata";
-import type { Readable } from "stream";
+import type NodeCache from 'node-cache';
+import type { Logger } from 'pino';
+import type { Readable } from 'stream';
+import type { URL } from 'url';
 import { proto } from '../../WAProto';
+import type { GroupMetadata } from './GroupMetadata';
 export { proto as WAProto };
 export declare type WAMessage = proto.IWebMessageInfo;
 export declare type WAMessageContent = proto.IMessage;
@@ -25,11 +24,17 @@ export declare type WAMediaUpload = Buffer | {
 };
 /** Set of message types that are supported by the library */
 export declare type MessageType = keyof proto.Message;
+export declare type DownloadableMessage = {
+    mediaKey?: Uint8Array;
+    directPath?: string;
+    url?: string;
+};
 export declare type MediaConnInfo = {
     auth: string;
     ttl: number;
     hosts: {
         hostname: string;
+        maxContentLengthBytes: number;
     }[];
     fetchDate: Date;
 };
@@ -56,6 +61,14 @@ declare type Templatable = {
     templateButtons?: proto.IHydratedTemplateButton[];
     footer?: string;
 };
+declare type Listable = {
+    /** Sections of the List */
+    sections?: proto.ISection[];
+    /** Title of a List Message only */
+    title?: string;
+    /** Text of the bnutton on the list (required) */
+    buttonText?: string;
+};
 declare type WithDimensions = {
     width?: number;
     height?: number;
@@ -73,7 +86,7 @@ export declare type AnyMediaMessageContent = (({
 } & Mentionable & Buttonable & Templatable & WithDimensions) | {
     audio: WAMediaUpload;
     /** if set to true, will send as a `voice note` */
-    pttAudio?: boolean;
+    ptt?: boolean;
     /** optionally tell the duration of the audio */
     seconds?: number;
 } | ({
@@ -87,7 +100,7 @@ export declare type AnyMediaMessageContent = (({
 };
 export declare type AnyRegularMessageContent = (({
     text: string;
-} & Mentionable & Buttonable & Templatable) | AnyMediaMessageContent | {
+} & Mentionable & Buttonable & Templatable & Listable) | AnyMediaMessageContent | {
     contacts: {
         displayName?: string;
         contacts: proto.IContactMessage[];
@@ -105,6 +118,8 @@ export declare type AnyMessageContent = AnyRegularMessageContent | {
 };
 export declare type MessageRelayOptions = {
     messageId?: string;
+    /** only send to a specific participant */
+    participant?: string;
     additionalAttributes?: {
         [_: string]: string;
     };
@@ -124,12 +139,13 @@ export declare type MiscMessageGenerationOptions = {
 export declare type MessageGenerationOptionsFromContent = MiscMessageGenerationOptions & {
     userJid: string;
 };
-export declare type WAMediaUploadFunction = (readStream: ReadStream, opts: {
+export declare type WAMediaUploadFunction = (readStream: Readable, opts: {
     fileEncSha256B64: string;
     mediaType: MediaType;
     timeoutMs?: number;
 }) => Promise<{
     mediaUrl: string;
+    directPath: string;
 }>;
 export declare type MediaGenerationOptions = {
     logger?: Logger;
@@ -142,14 +158,8 @@ export declare type MessageContentGenerationOptions = MediaGenerationOptions & {
     getUrlInfo?: (text: string) => Promise<WAUrlInfo>;
 };
 export declare type MessageGenerationOptions = MessageContentGenerationOptions & MessageGenerationOptionsFromContent;
-export declare type MessageUpdateType = 'append' | 'notify' | 'prepend';
-export declare type MessageInfoEventMap = {
-    [jid: string]: Date;
-};
-export interface MessageInfo {
-    reads: MessageInfoEventMap;
-    deliveries: MessageInfoEventMap;
-}
+export declare type MessageUpdateType = 'append' | 'notify' | 'replace';
+export declare type MessageUserReceipt = proto.IUserReceipt;
 export declare type WAMessageUpdate = {
     update: Partial<WAMessage>;
     key: proto.IMessageKey;
@@ -159,7 +169,7 @@ export declare type WAMessageCursor = {
 } | {
     after: WAMessageKey | undefined;
 };
-export declare type MessageInfoUpdate = {
+export declare type MessageUserReceiptUpdate = {
     key: proto.IMessageKey;
-    update: Partial<MessageInfo>;
+    receipt: MessageUserReceipt;
 };

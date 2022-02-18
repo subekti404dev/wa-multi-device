@@ -1,10 +1,12 @@
 /// <reference types="node" />
+import { Logger } from 'pino';
 import { proto } from '../../WAProto';
+import { CommonBaileysEventEmitter } from '../Types';
+import { ConnectionState } from '..';
 export declare const Browsers: {
     ubuntu: (browser: any) => [string, string, string];
     macOS: (browser: any) => [string, string, string];
     baileys: (browser: any) => [string, string, string];
-    subekti: (browser: any) => [string, string, string];
     /** The appropriate browser based on your OS & release */
     appropriate: (browser: any) => [string, string, string];
 };
@@ -38,3 +40,5 @@ export declare const delayCancellable: (ms: number) => {
 };
 export declare function promiseTimeout<T>(ms: number, promise: (resolve: (v?: T) => void, reject: (error: any) => void) => void): Promise<T>;
 export declare const generateMessageID: () => string;
+export declare const bindWaitForConnectionUpdate: (ev: CommonBaileysEventEmitter<any>) => (check: (u: Partial<ConnectionState>) => boolean, timeoutMs?: number) => Promise<void>;
+export declare const printQRIfNecessaryListener: (ev: CommonBaileysEventEmitter<any>, logger: Logger) => void;

@@ -1,8 +1,8 @@
 {
-  "name": "wa-multi-device",
+  "name": "@adiwajshing/baileys",
   "version": "4.0.0",
-  "description": "WhatsApp Multi-Device API",
-  "homepage": "https://github.com/subekti404dev/wa-multi-device",
+  "description": "WhatsApp API",
+  "homepage": "https://github.com/adiwajshing/Baileys",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -17,19 +17,14 @@
     "multi-device"
   ],
   "scripts": {
-    "test": "jest",
-    "prepare": "tsc",
-    "lint": "eslint '*/*.ts' --quiet --fix",
     "build:all": "tsc && typedoc",
     "build:docs": "typedoc",
     "build:tsc": "tsc",
     "example": "node --inspect -r ts-node/register Example/example.ts",
-    "gen-protobuf": "bash src/BinaryNode/GenerateStatics.sh",
+    "example:legacy": "node --inspect -r ts-node/register Example/example-legacy.ts",
+    "gen-protobuf": "sh WAProto/GenerateStatics.sh",
     "browser-decode": "yarn ts-node src/BrowserMessageDecoding.ts"
   },
-  "pre-commit": [
-    "build:all"
-  ],
   "author": "Adhiraj Singh",
   "license": "MIT",
   "repository": {
@@ -37,18 +32,20 @@
   },
   "dependencies": {
     "@hapi/boom": "^9.1.3",
+    "axios": "^0.24.0",
     "curve25519-js": "^0.0.4",
-    "got": "^11.8.1",
-    "jimp": "^0.16.1",
     "libsignal": "git+https://github.com/adiwajshing/libsignal-node",
     "music-metadata": "^7.4.1",
     "node-cache": "^5.1.2",
-    "pino": "^6.7.0",
+    "pino": "^7.0.0",
     "protobufjs": "^6.10.1",
-    "ws": "^7.3.1"
+    "ws": "^8.0.0"
   },
-  "optionalDependencies": {
-    "qrcode-terminal": "^0.12.0"
+  "peerDependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
+    "jimp": "^0.16.1",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.29.3"
   },
   "files": [
     "lib/*",
@@ -57,17 +54,22 @@
     "WABinary/*.js"
   ],
   "devDependencies": {
+    "@adiwajshing/eslint-config": "git+https://github.com/adiwajshing/eslint-config",
+    "@adiwajshing/keyed-db": "^0.2.4",
     "@types/got": "^9.6.11",
     "@types/jest": "^26.0.24",
     "@types/node": "^14.6.2",
-    "@types/pino": "^6.3.2",
-    "@types/ws": "^7.2.6",
+    "@types/pino": "^7.0.0",
+    "@types/sharp": "^0.29.4",
+    "@types/ws": "^8.0.0",
+    "eslint": "^7.0.0",
     "jest": "^27.0.6",
-    "pre-commit": "^1.2.2",
+    "jimp": "^0.16.1",
     "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.29.3",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
-    "typedoc": "^0.20.0-beta.27",
+    "typedoc": "^0.22.0",
     "typescript": "^4.0.0"
   }
 }

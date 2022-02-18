@@ -1,7 +1,6 @@
 /// <reference types="node" />
-import type { Contact } from "./Contact";
-import type { proto } from "../../WAProto";
-import type { WAPatchName } from "./Chat";
+import type { proto } from '../../WAProto';
+import type { Contact } from './Contact';
 export declare type KeyPair = {
     public: Uint8Array;
     private: Uint8Array;
@@ -45,18 +44,32 @@ export declare type AuthenticationCreds = SignalCreds & {
     nextPreKeyId: number;
     lastAccountSyncTimestamp?: number;
 };
+export declare type SignalDataTypeMap = {
+    'pre-key': KeyPair;
+    'session': any;
+    'sender-key': any;
+    'sender-key-memory': {
+        [jid: string]: boolean;
+    };
+    'app-state-sync-key': proto.IAppStateSyncKeyData;
+    'app-state-sync-version': LTHashState;
+};
+export declare type SignalDataSet = {
+    [T in keyof SignalDataTypeMap]?: {
+        [id: string]: SignalDataTypeMap[T] | null;
+    };
+};
 declare type Awaitable<T> = T | Promise<T>;
 export declare type SignalKeyStore = {
-    getPreKey: (keyId: number) => Awaitable<KeyPair>;
-    setPreKey: (keyId: number, pair: KeyPair | null) => Awaitable<void>;
-    getSession: (sessionId: string) => Awaitable<any>;
-    setSession: (sessionId: string, item: any | null) => Awaitable<void>;
-    getSenderKey: (id: string) => Awaitable<any>;
-    setSenderKey: (id: string, item: any | null) => Awaitable<void>;
-    getAppStateSyncKey: (id: string) => Awaitable<proto.IAppStateSyncKeyData>;
-    setAppStateSyncKey: (id: string, item: proto.IAppStateSyncKeyData | null) => Awaitable<void>;
-    getAppStateSyncVersion: (name: WAPatchName) => Awaitable<LTHashState>;
-    setAppStateSyncVersion: (id: WAPatchName, item: LTHashState) => Awaitable<void>;
+    get<T extends keyof SignalDataTypeMap>(type: T, ids: string[]): Awaitable<{
+        [id: string]: SignalDataTypeMap[T];
+    }>;
+    set(data: SignalDataSet): Awaitable<void>;
+};
+export declare type SignalKeyStoreWithTransaction = SignalKeyStore & {
+    isInTransaction: () => boolean;
+    transaction(exec: () => Promise<void>): Promise<void>;
+    prefetch<T extends keyof SignalDataTypeMap>(type: T, ids: string[]): Promise<void>;
 };
 export declare type SignalAuthState = {
     creds: SignalCreds;

@@ -1,6 +1,6 @@
 /// <reference types="node" />
-import WebSocket from "ws";
-import { SocketConfig, BaileysEventEmitter, ConnectionState } from "../Types";
+import WebSocket from 'ws';
+import { AuthenticationCreds, BaileysEventEmitter, SocketConfig } from '../Types';
 import { BinaryNode } from '../WABinary';
 /**
  * Connects to WA servers and performs:
@@ -9,10 +9,14 @@ import { BinaryNode } from '../WABinary';
  * - query phone connection
  */
 export declare const makeSocket: ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAliveIntervalMs, version, browser, auth: initialAuthState, printQRInTerminal, defaultQueryTimeoutMs }: SocketConfig) => {
+    type: "md";
     ws: WebSocket;
     ev: BaileysEventEmitter;
-    authState: import("../Types").AuthenticationState;
-    readonly user: import("../Types").Contact;
+    authState: {
+        creds: AuthenticationCreds;
+        keys: import("@adiwajshing/baileys/src/Types/Auth").SignalKeyStoreWithTransaction;
+    };
+    readonly user: import("@adiwajshing/baileys/src/Types/Contact").Contact;
     assertingPreKeys: (range: number, execute: (keys: {
         [_: number]: any;
     }) => Promise<void>) => Promise<void>;
@@ -24,6 +28,7 @@ export declare const makeSocket: ({ waWebSocketUrl, connectTimeoutMs, logger, ag
     sendNode: (node: BinaryNode) => Promise<void>;
     logout: () => Promise<void>;
     end: (error: Error | undefined) => void;
-    waitForConnectionUpdate: (check: (u: Partial<ConnectionState>) => boolean, timeoutMs?: number) => Promise<void>;
+    /** Waits for the connection to WA to reach a state */
+    waitForConnectionUpdate: (check: (u: Partial<import("@adiwajshing/baileys/src/Types/State").ConnectionState>) => boolean, timeoutMs?: number) => Promise<void>;
 };
 export declare type Socket = ReturnType<typeof makeSocket>;

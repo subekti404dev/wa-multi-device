@@ -1,13 +1,13 @@
 /// <reference types="node" />
-import { SignalIdentity, SignalKeyStore, SignedKeyPair, KeyPair, SignalAuthState, AuthenticationCreds } from "../Types/Auth";
-import { BinaryNode, JidWithDevice } from "../WABinary";
-import { proto } from "../../WAProto";
+import { proto } from '../../WAProto';
+import { AuthenticationCreds, KeyPair, SignalAuthState, SignalIdentity, SignalKeyStore, SignedKeyPair } from '../Types/Auth';
+import { BinaryNode, JidWithDevice } from '../WABinary';
 export declare const generateSignalPubKey: (pubKey: Uint8Array | Buffer) => Buffer;
 export declare const jidToSignalProtocolAddress: (jid: string) => any;
 export declare const jidToSignalSenderKeyName: (group: string, user: string) => string;
 export declare const createSignalIdentity: (wid: string, accountSignatureKey: Uint8Array) => SignalIdentity;
-export declare const getPreKeys: ({ getPreKey }: SignalKeyStore, min: number, limit: number) => Promise<{
-    [id: number]: KeyPair;
+export declare const getPreKeys: ({ get }: SignalKeyStore, min: number, limit: number) => Promise<{
+    [id: string]: KeyPair;
 }>;
 export declare const generateOrGetPreKeys: (creds: AuthenticationCreds, range: number) => {
     newPreKeys: {
@@ -19,10 +19,10 @@ export declare const generateOrGetPreKeys: (creds: AuthenticationCreds, range: n
 export declare const xmppSignedPreKey: (key: SignedKeyPair) => BinaryNode;
 export declare const xmppPreKey: (pair: KeyPair, id: number) => BinaryNode;
 export declare const signalStorage: ({ creds, keys }: SignalAuthState) => {
-    loadSession: (id: any) => Promise<any>;
+    loadSession: (id: string) => Promise<any>;
     storeSession: (id: any, session: any) => Promise<void>;
     isTrustedIdentity: () => boolean;
-    loadPreKey: (id: number) => Promise<{
+    loadPreKey: (id: number | string) => Promise<{
         privKey: Buffer;
         pubKey: Buffer;
     }>;
@@ -31,7 +31,7 @@ export declare const signalStorage: ({ creds, keys }: SignalAuthState) => {
         privKey: Buffer;
         pubKey: Buffer;
     };
-    loadSenderKey: (keyId: any) => Promise<any>;
+    loadSenderKey: (keyId: string) => Promise<any>;
     storeSenderKey: (keyId: any, key: any) => Promise<void>;
     getOurRegistrationId: () => number;
     getOurIdentity: () => {
@@ -50,5 +50,5 @@ export declare const encryptSenderKeyMsgSignalProto: (group: string, data: Uint8
     ciphertext: Uint8Array;
     senderKeyDistributionMessageKey: Buffer;
 }>;
-export declare const parseAndInjectE2ESession: (node: BinaryNode, auth: SignalAuthState) => Promise<void>;
-export declare const extractDeviceJids: (result: BinaryNode, myDeviceId: number, excludeZeroDevices: boolean) => JidWithDevice[];
+export declare const parseAndInjectE2ESessions: (node: BinaryNode, auth: SignalAuthState) => Promise<void>;
+export declare const extractDeviceJids: (result: BinaryNode, myJid: string, excludeZeroDevices: boolean) => JidWithDevice[];
